@@ -12,7 +12,7 @@ target_link_libraries(koinos_log PUBLIC Boost::log_setup Boost::log Boost::files
 add_library(Koinos::log ALIAS koinos_log)
 
 install(
-  TARGETS Koinos::log
+  TARGETS koinos_log
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib

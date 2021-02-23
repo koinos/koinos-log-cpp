@@ -100,4 +100,4 @@ add_subdirectory(tests)
 
 export(TARGETS log
   NAMESPACE Koinos::
-  FILE ${PROJECT_BINARY_DIR}/koinos-log.cmake)
+  FILE ${PROJECT_BINARY_DIR}/koinos-log-config.cmake)

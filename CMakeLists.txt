@@ -100,8 +100,4 @@ add_subdirectory(tests)
 
 export(TARGETS log
   NAMESPACE Koinos::
-  FILE ${PROJECT_BINARY_DIR}/koinos-log-targets.cmake)
-
-install(EXPORT koinos-log-targets.cmake
-  DESTINATION ${RMQ_CMAKE_DIR}
-  NAMESPACE ${CMAKE_INSTALL_LIBDIR}/cmake/koinos-log)
+  FILE ${PROJECT_BINARY_DIR}/koinos-log.cmake)

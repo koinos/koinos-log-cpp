@@ -89,7 +89,7 @@ if(COVERAGE)
   setup_target_for_coverage_lcov(
      NAME coverage
      LCOV_ARGS "--quiet" "--no-external"
-     EXECUTABLE koinos_tests
+     EXECUTABLE koinos_log_tests
      EXCLUDE "libraries/vendor/*" "build/generated/*")
 endif()
 

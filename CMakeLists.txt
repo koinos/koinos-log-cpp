@@ -93,11 +93,15 @@ if(COVERAGE)
      EXCLUDE "libraries/vendor/*" "build/generated/*")
 endif()
 
-hunter_add_package(Boost COMPONENTS log filesystem  test )
+hunter_add_package(Boost COMPONENTS log filesystem test )
 
 add_subdirectory(libraries)
 add_subdirectory(tests)
 
-export(TARGETS ${INSTALL_TARGETS}
+export(TARGETS log
   NAMESPACE Koinos::
-  FILE ${PROJECT_BINARY_DIR}/${targets_export_name}.cmake)
+  FILE ${PROJECT_BINARY_DIR}/koinos-log-targets.cmake)
+
+install(EXPORT koinos-log-targets.cmake
+  DESTINATION ${RMQ_CMAKE_DIR}
+  NAMESPACE ${CMAKE_INSTALL_LIBDIR}/cmake/koinos-log)

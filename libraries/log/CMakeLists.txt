@@ -11,3 +11,10 @@ target_include_directories(koinos_log PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 target_link_libraries(koinos_log PUBLIC Boost::log_setup Boost::log Boost::filesystem)
 add_library(Koinos::log ALIAS koinos_log)
 
+install(
+  TARGETS Koinos::log
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)
+INSTALL( FILES ${HEADERS} DESTINATION "include/koinos/chain" )

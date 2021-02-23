@@ -97,3 +97,7 @@ hunter_add_package(Boost COMPONENTS log filesystem  test )
 
 add_subdirectory(libraries)
 add_subdirectory(tests)
+
+export(TARGETS ${INSTALL_TARGETS}
+  NAMESPACE Koinos::
+  FILE ${PROJECT_BINARY_DIR}/${targets_export_name}.cmake)

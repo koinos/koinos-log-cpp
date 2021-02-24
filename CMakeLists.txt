@@ -98,6 +98,33 @@ hunter_add_package(Boost COMPONENTS log filesystem test )
 add_subdirectory(libraries)
 add_subdirectory(tests)
 
-export(TARGETS log
+set(koinos_lib koinos-log)
+set(targets_export_name ${koinos_lib}-targets)
+
+include(CMakePackageConfigHelpers)
+set(KOINOS_LIB_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${koinos_lib})
+set(project_config "${CMAKE_CURRENT_BINARY_DIR}/${koinos_lib}-config.cmake")
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/${koinos_lib}-config.cmake.in"
+  "${project_config}"
+  INSTALL_DESTINATION "${KOINOS_LIB_CMAKE_DIR}"
+)
+
+list(APPEND INSTALL_TARGETS log)
+
+export(
+  TARGETS ${INSTALL_TARGETS}
   NAMESPACE Koinos::
-  FILE ${PROJECT_BINARY_DIR}/koinos-log-config.cmake)
+  FILE ${PROJECT_BINARY_DIR}/${targets_export_name}.cmake
+)
+
+install(
+  FILES ${project_config} ${targets_export_name}.cmake
+  DESTINATION ${KOINOS_LIB_CMAKE_DIR}
+)
+
+#install(EXPORT ${targets_export_name}
+#  DESTINATION ${KOINOS_LIB_CMAKE_DIR}
+#  NAMESPACE Koinos::
+#)

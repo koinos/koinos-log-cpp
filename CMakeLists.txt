@@ -10,6 +10,8 @@ if(CCACHE_PROGRAM)
    set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS   "${CMAKE_SOURCE_DIR}/ci/ccache_clang++")
 endif()
 
+include(GNUInstallDirs)
+
 option(HUNTER_RUN_UPLOAD "Upload Hunter packages to binary cache server" OFF)
 
 set(
@@ -119,12 +121,12 @@ export(
   FILE ${PROJECT_BINARY_DIR}/${targets_export_name}.cmake
 )
 
-install(
-  FILES ${project_config} ${targets_export_name}.cmake
-  DESTINATION ${KOINOS_LIB_CMAKE_DIR}
-)
-
-#install(EXPORT ${targets_export_name}
+#install(
+#  FILES ${project_config}
+#  DESTINATION ${KOINOS_LIB_CMAKE_DIR}
+#)
+#
+#install(EXPORT ${PROJECT_BINARY_DIR}/${targets_export_name}.cmake
 #  DESTINATION ${KOINOS_LIB_CMAKE_DIR}
 #  NAMESPACE Koinos::
 #)

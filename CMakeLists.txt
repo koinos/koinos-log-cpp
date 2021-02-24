@@ -31,16 +31,10 @@ set(
 include("cmake/HunterGate.cmake")
 
 HunterGate(
-   URL "https://github.com/koinos/hunter/archive/koinos-v0.1.4.tar.gz"
-   SHA1 "965cbabd1a8afcd2ea43bb9a9ee116998ee9ae98"
-   LOCAL
+  URL "https://github.com/cpp-pm/hunter/archive/v0.23.287.tar.gz"
+  SHA1 "69371a638d697bbf09f4f08dd0aad996efcc79d9"
+  LOCAL
 )
-
-#HunterGate(
-#   URL "https://github.com/cpp-pm/hunter/archive/v0.23.287.tar.gz"
-#   SHA1 "69371a638d697bbf09f4f08dd0aad996efcc79d9"
-#   LOCAL
-#)
 
 project(koinos_log VERSION 0.1.0 LANGUAGES CXX)
 
@@ -76,28 +70,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror" )
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror" )
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas" )
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unknown-pragmas" )
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
-
-if(APPLE)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GNU_SOURCE")
-   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
-endif()
-
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(Boost_NO_BOOST_CMAKE ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
-
-if(${CMAKE_GENERATOR} MATCHES "Xcode")
-  set(CMAKE_XCODE_GENERATE_SCHEME YES)
-endif()
 
 if(COVERAGE)
   include(CodeCoverage)
@@ -109,15 +83,17 @@ if(COVERAGE)
      EXCLUDE "libraries/vendor/*" "build/generated/*")
 endif()
 
-hunter_add_package(Boost COMPONENTS log filesystem test )
+hunter_add_package(Boost COMPONENTS log filesystem test)
 
 add_subdirectory(libraries)
-add_subdirectory(tests)
+if (BUILD_TESTS)
+   add_subdirectory(tests)
+endif()
 
 # Install a pkg-config file, so other tools can find this.
 configure_file(
- "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkg-config.pc.in"
- "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkg-config.pc.in"
+   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
 )
 
 #
@@ -125,9 +101,7 @@ configure_file(
 # install header files, generate and install cmake config files for find_package()
 #
 include(CMakePackageConfigHelpers)
-# use a custom package version config file instead of
-# write_basic_package_version_file to ensure that it's architecture-independent
-# https://github.com/nlohmann/json/issues/1697
+
 configure_file(
    "cmake/koinos_logConfigVersion.cmake.in"
    ${KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE}
@@ -140,34 +114,11 @@ configure_file(
 )
 
 install(
- DIRECTORY ${KOINOS_LIB_INCLUDE_BUILD_DIR}
- DESTINATION ${KOINOS_LIB_INCLUDE_INSTALL_DIR}
+   FILES ${KOINOS_LIB_CMAKE_PROJECT_CONFIG_FILE} ${KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE}
+   DESTINATION ${KOINOS_LIB_CONFIG_INSTALL_DIR}
 )
 
 install(
- FILES ${KOINOS_LIB_CMAKE_PROJECT_CONFIG_FILE} ${KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE}
- DESTINATION ${KOINOS_LIB_CONFIG_INSTALL_DIR}
-)
-
-export(
- TARGETS ${KOINOS_LIB_TARGET_NAME}
- NAMESPACE Koinos::
- FILE ${KOINOS_LIB_CMAKE_PROJECT_TARGETS_FILE}
-)
-
-install(
- TARGETS ${KOINOS_LIB_TARGET_NAME}
- EXPORT ${KOINOS_LIB_TARGETS_EXPORT_NAME}
- INCLUDES DESTINATION ${KOINOS_LIB_INCLUDE_INSTALL_DIR}
-)
-
-install(
- EXPORT ${KOINOS_LIB_TARGETS_EXPORT_NAME}
- NAMESPACE Koinos::
- DESTINATION ${KOINOS_LIB_CONFIG_INSTALL_DIR}
-)
-
-install(
- FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
- DESTINATION ${KOINOS_LIB_PKGCONFIG_INSTALL_DIR}
+   FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+   DESTINATION ${KOINOS_LIB_PKGCONFIG_INSTALL_DIR}
 )

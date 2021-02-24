@@ -22,4 +22,4 @@ install(
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
-INSTALL( FILES ${HEADERS} DESTINATION "include/koinos/chain" )
+INSTALL( FILES ${HEADERS} DESTINATION "include/koinos" )

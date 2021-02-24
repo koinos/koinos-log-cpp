@@ -10,8 +10,6 @@ if(CCACHE_PROGRAM)
    set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS   "${CMAKE_SOURCE_DIR}/ci/ccache_clang++")
 endif()
 
-include(GNUInstallDirs)
-
 option(HUNTER_RUN_UPLOAD "Upload Hunter packages to binary cache server" OFF)
 
 set(
@@ -44,7 +42,23 @@ HunterGate(
 #   LOCAL
 #)
 
-project(koinos_log)
+project(koinos_log VERSION 0.1.0 LANGUAGES CXX)
+
+##
+## CONFIGURATION
+##
+include(GNUInstallDirs)
+
+set(KOINOS_LIB_TARGET_NAME                ${PROJECT_NAME})
+set(KOINOS_LIB_CONFIG_INSTALL_DIR         "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE INTERNAL "")
+set(KOINOS_LIB_INCLUDE_INSTALL_DIR        "${CMAKE_INSTALL_INCLUDEDIR}")
+set(KOINOS_LIB_TARGETS_EXPORT_NAME        "${PROJECT_NAME}Targets")
+set(KOINOS_LIB_CMAKE_CONFIG_TEMPLATE      "cmake/config.cmake.in")
+set(KOINOS_LIB_CMAKE_CONFIG_DIR           "${CMAKE_CURRENT_BINARY_DIR}")
+set(KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE  "${KOINOS_LIB_CMAKE_CONFIG_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+set(KOINOS_LIB_CMAKE_PROJECT_CONFIG_FILE  "${KOINOS_LIB_CMAKE_CONFIG_DIR}/${PROJECT_NAME}Config.cmake")
+set(KOINOS_LIB_CMAKE_PROJECT_TARGETS_FILE "${KOINOS_LIB_CMAKE_CONFIG_DIR}/${PROJECT_NAME}Targets.cmake")
+set(KOINOS_LIB_PKGCONFIG_INSTALL_DIR      "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
 option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." OFF)
 
@@ -100,33 +114,61 @@ hunter_add_package(Boost COMPONENTS log filesystem test )
 add_subdirectory(libraries)
 add_subdirectory(tests)
 
-set(koinos_lib koinos-log)
-set(targets_export_name ${koinos_lib}-targets)
-
-include(CMakePackageConfigHelpers)
-set(KOINOS_LIB_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${koinos_lib})
-set(project_config "${CMAKE_CURRENT_BINARY_DIR}/${koinos_lib}-config.cmake")
-
-configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/${koinos_lib}-config.cmake.in"
-  "${project_config}"
-  INSTALL_DESTINATION "${KOINOS_LIB_CMAKE_DIR}"
+# Install a pkg-config file, so other tools can find this.
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkg-config.pc.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
 )
 
-list(APPEND INSTALL_TARGETS log)
+##
+## INSTALL
+## install header files, generate and install cmake config files for find_package()
+##
+include(CMakePackageConfigHelpers)
+# use a custom package version config file instead of
+# write_basic_package_version_file to ensure that it's architecture-independent
+# https://github.com/nlohmann/json/issues/1697
+configure_file(
+    "cmake/koinos_logConfigVersion.cmake.in"
+    ${KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE}
+    @ONLY
+)
+configure_file(
+    ${KOINOS_LIB_CMAKE_CONFIG_TEMPLATE}
+    ${KOINOS_LIB_CMAKE_PROJECT_CONFIG_FILE}
+    @ONLY
+)
+
+
+install(
+  DIRECTORY ${KOINOS_LIB_INCLUDE_BUILD_DIR}
+  DESTINATION ${KOINOS_LIB_INCLUDE_INSTALL_DIR}
+)
+
+install(
+  FILES ${KOINOS_LIB_CMAKE_PROJECT_CONFIG_FILE} ${KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE}
+  DESTINATION ${KOINOS_LIB_CONFIG_INSTALL_DIR}
+)
 
 export(
-  TARGETS ${INSTALL_TARGETS}
+  TARGETS ${KOINOS_LIB_TARGET_NAME}
   NAMESPACE Koinos::
-  FILE ${PROJECT_BINARY_DIR}/${targets_export_name}.cmake
+  FILE ${KOINOS_LIB_CMAKE_PROJECT_TARGETS_FILE}
 )
 
-#install(
-#  FILES ${project_config}
-#  DESTINATION ${KOINOS_LIB_CMAKE_DIR}
-#)
-#
-#install(EXPORT ${PROJECT_BINARY_DIR}/${targets_export_name}.cmake
-#  DESTINATION ${KOINOS_LIB_CMAKE_DIR}
-#  NAMESPACE Koinos::
-#)
+install(
+  TARGETS ${KOINOS_LIB_TARGET_NAME}
+  EXPORT ${KOINOS_LIB_TARGETS_EXPORT_NAME}
+  INCLUDES DESTINATION ${KOINOS_LIB_INCLUDE_INSTALL_DIR}
+)
+
+install(
+  EXPORT ${KOINOS_LIB_TARGETS_EXPORT_NAME}
+  NAMESPACE Koinos::
+  DESTINATION ${KOINOS_LIB_CONFIG_INSTALL_DIR}
+)
+
+install(
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+  DESTINATION ${KOINOS_LIB_PKGCONFIG_INSTALL_DIR}
+)

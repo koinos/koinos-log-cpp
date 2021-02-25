@@ -12,4 +12,5 @@ if(NOT TARGET Koinos::@KOINOS_LIB_TARGET_NAME@)
             INTERFACE_LINK_LIBRARIES Koinos::@KOINOS_LIB_TARGET_NAME@
         )
     endif()
+    add_library(Koinos::@KOINOS_LIB_TARGET_SHORT_NAME@ ALIAS @KOINOS_LIB_TARGET_NAME@)
 endif()

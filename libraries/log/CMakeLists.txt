@@ -14,13 +14,6 @@ target_include_directories(koinos_log PUBLIC
 target_link_libraries(koinos_log PUBLIC Boost::log_setup Boost::log Boost::filesystem)
 add_library(Koinos::koinos_log ALIAS koinos_log)
 
-install(
-  TARGETS koinos_log
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-)
-
 install(FILES ${HEADERS} DESTINATION "include/koinos")
 
 export(
@@ -33,6 +26,9 @@ install(
    TARGETS ${KOINOS_LIB_TARGET_NAME}
    EXPORT ${KOINOS_LIB_TARGETS_EXPORT_NAME}
    INCLUDES DESTINATION ${KOINOS_LIB_INCLUDE_INSTALL_DIR}
+   RUNTIME DESTINATION bin
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib
 )
 
 install(

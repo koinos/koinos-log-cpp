@@ -104,7 +104,7 @@ configure_file(
 include(CMakePackageConfigHelpers)
 
 configure_file(
-   "cmake/koinos_logConfigVersion.cmake.in"
+   "cmake/${PROJECT_NAME}ConfigVersion.cmake.in"
    ${KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE}
    @ONLY
 )

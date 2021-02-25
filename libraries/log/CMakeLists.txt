@@ -12,7 +12,7 @@ target_include_directories(koinos_log PUBLIC
    $<INSTALL_INTERFACE:include>
 )
 target_link_libraries(koinos_log PUBLIC Boost::log_setup Boost::log Boost::filesystem)
-add_library(Koinos::koinos_log ALIAS koinos_log)
+add_library(Koinos::log ALIAS koinos_log)
 
 install(FILES ${HEADERS} DESTINATION "include/koinos")
 

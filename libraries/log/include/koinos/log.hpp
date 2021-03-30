@@ -12,4 +12,14 @@ BOOST_LOG_SEV(::boost::log::trivial::logger::get(), boost::log::trivial::LEVEL) 
   << boost::log::add_value("Line", __LINE__)                                               \
   << boost::log::add_value("File", boost::filesystem::path(__FILE__).filename().string())  \
 
-namespace koinos { void initialize_logging( const boost::filesystem::path& p, const std::string& file_pattern, bool color = true ); }
+namespace koinos {
+
+void initialize_logging(
+   const boost::filesystem::path& p,
+   const std::string& file_pattern,
+   const std::string& application_name,
+   const std::string& level = "info",
+   const std::string& identifier = std::string{},
+   bool color = true );
+
+} // koinos

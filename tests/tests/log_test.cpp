@@ -20,10 +20,8 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
    std::cout.rdbuf( stream.rdbuf() );
 
    std::vector< std::string > logtypes {
-#ifndef NDEBUG
        "<\033[32mtrace\033[0m>",
-       "<\033[32mdebug\033[0m>", 
-#endif            
+       "<\033[32mdebug\033[0m>",
        "<\033[32minfo\033[0m>",
        "<\033[33mwarning\033[0m>",
        "<\033[31merror\033[0m>",
@@ -33,7 +31,7 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
 
    auto temp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
    boost::filesystem::create_directory( temp );
-   koinos::initialize_logging( temp, "log_test_color_%3N.log" );
+   koinos::initialize_logging( temp, "log_test_color_%3N.log", "log_test", "trace", "9abcd" );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -69,12 +67,7 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
    // Setting std::cout back to normal
    std::cout.rdbuf( buf );
 
-   // When building in release mode trace and debug are filtered out
-#ifdef NDEBUG
-   BOOST_REQUIRE_EQUAL( "<info>: test", expected_string );
-#else
    BOOST_REQUIRE_EQUAL( "<trace>: test", expected_string );
-#endif
 
    BOOST_REQUIRE_EQUAL( results.size(), logtypes.size() );
    for ( int i = 0; i < results.size(); i++ )
@@ -95,10 +88,8 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
    std::cout.rdbuf( stream.rdbuf() );
 
    std::vector< std::string > logtypes {
-#ifndef NDEBUG
        "<trace>",
        "<debug>",
-#endif
        "<info>",
        "<warning>",
        "<error>",
@@ -108,7 +99,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
 
    auto temp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
    boost::filesystem::create_directory( temp );
-   koinos::initialize_logging( temp, "log_test_no_color_%3N.log", false /* no color */ );
+   koinos::initialize_logging( temp, "log_test_no_color_%3N.log", "log_test", "trace", "9abcd", false /* no color */ );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -144,12 +135,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
    // Setting std::cout back to normal
    std::cout.rdbuf( buf );
 
-   // When building in release mode trace and debug are filtered out
-#ifdef NDEBUG
-   BOOST_REQUIRE_EQUAL( "<info>: test", expected_string );
-#else
    BOOST_REQUIRE_EQUAL( "<trace>: test", expected_string );
-#endif
 
    BOOST_REQUIRE_EQUAL( results.size(), logtypes.size() );
    for ( int i = 0; i < results.size(); i++ )

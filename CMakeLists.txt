@@ -87,6 +87,12 @@ endif()
 
 hunter_add_package(Boost COMPONENTS log filesystem test)
 
+hunter_add_package(koinos_util)
+
+find_package(Boost CONFIG REQUIRED log log_setup filesystem)
+
+find_package(koinos_util CONFIG REQUIRED)
+
 add_subdirectory(libraries)
 if (BUILD_TESTS)
    add_subdirectory(tests)

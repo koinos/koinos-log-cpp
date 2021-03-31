@@ -148,7 +148,7 @@ void initialize_logging(
    if ( id.empty() )
       id = random_alphanumeric( 5 );
 
-   std::string service_id = application_name + "-" + id;
+   std::string service_id = application_name + "." + id;
 
    if ( color )
       boost::log::core::get()->add_sink( boost::make_shared< color_console_sink >() );

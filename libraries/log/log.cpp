@@ -1,8 +1,7 @@
 #include <koinos/log.hpp>
 #include <koinos/util.hpp>
 
-#include <algorithm>
-#include <random>
+#include <iostream>
 #include <string>
 
 #include <boost/log/sinks/basic_sink_backend.hpp>

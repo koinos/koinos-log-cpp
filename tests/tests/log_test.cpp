@@ -12,6 +12,28 @@ struct log_fixture{};
 
 BOOST_FIXTURE_TEST_SUITE( log_tests, log_fixture )
 
+BOOST_AUTO_TEST_CASE( log_level_stream_operator )
+{
+   BOOST_TEST_MESSAGE( "Testing log level stream operator" );
+   std::string string_level = "trace debug info warning error fatal";
+   std::vector< koinos::log_level > levels {
+      koinos::log_level::trace,
+      koinos::log_level::debug,
+      koinos::log_level::info,
+      koinos::log_level::warning,
+      koinos::log_level::error,
+      koinos::log_level::fatal
+   };
+
+   std::istringstream iss( string_level );
+   for ( auto& level : levels )
+   {
+      koinos::log_level lvl;
+      iss >> lvl;
+      BOOST_REQUIRE_EQUAL( lvl, level );
+   }
+}
+
 BOOST_AUTO_TEST_CASE( log_color_tests )
 {
    BOOST_TEST_MESSAGE( "Testing logging library with color" );
@@ -31,7 +53,12 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
 
    auto temp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
    boost::filesystem::create_directory( temp );
-   koinos::initialize_logging( temp, "log_test_color_%3N.log", "log_test", "trace", "9abcd" );
+   std::string string_level = "trace";
+   std::istringstream iss( string_level );
+   koinos::log_level lvl;
+   iss >> lvl;
+   BOOST_ASSERT( lvl == koinos::log_level::trace );
+   koinos::initialize_logging( temp, "log_test_color_%3N.log", "log_test", "9abcd", lvl );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -99,7 +126,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
 
    auto temp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
    boost::filesystem::create_directory( temp );
-   koinos::initialize_logging( temp, "log_test_no_color_%3N.log", "log_test", "trace", "9abcd", false /* no color */ );
+   koinos::initialize_logging( temp, "log_test_no_color_%3N.log", "log_test", "9abcd", koinos::log_level::trace, false /* no color */ );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";

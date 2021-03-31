@@ -88,22 +88,22 @@ public:
       s << "<";
       switch ( level.get() )
       {
-         case boost::log::trivial::trace:
+         case log_level::trace:
             s << colorize( TRACE_STRING, color::green );
             break;
-         case boost::log::trivial::debug:
+         case log_level::debug:
             s << colorize( DEBUG_STRING, color::green );
             break;
-         case boost::log::trivial::info:
+         case log_level::info:
             s << colorize( INFO_STRING, color::green );
             break;
-         case boost::log::trivial::warning:
+         case log_level::warning:
             s << colorize( WARNING_STRING, color::yellow );
             break;
-         case boost::log::trivial::error:
+         case log_level::error:
             s << colorize( ERROR_STRING, color::red );
             break;
-         case boost::log::trivial::fatal:
+         case log_level::fatal:
             s << colorize( FATAL_STRING, color::red );
             break;
          default:
@@ -133,19 +133,21 @@ inline std::string random_alphanumeric( std::size_t len )
 }
 
 void initialize_logging(
-   const boost::filesystem::path& p,
+   const boost::filesystem::path& path,
    const std::string& file_pattern,
    const std::string& application_name,
-   const std::string& level,
-   const std::string& identifier,
+   const std::optional< std::string >& identifier,
+   log_level filter_level,
    bool color )
 {
    using console_sink       = boost::log::sinks::synchronous_sink< console_sink_impl< false > >;
    using color_console_sink = boost::log::sinks::synchronous_sink< console_sink_impl< true > >;
 
-   std::string id = identifier;
+   std::string id;
 
-   if ( id.empty() )
+   if ( identifier.has_value() )
+      id = identifier.value();
+   else
       id = random_alphanumeric( 5 );
 
    std::string service_id = application_name + "." + id;
@@ -155,7 +157,7 @@ void initialize_logging(
    else
       boost::log::core::get()->add_sink( boost::make_shared< console_sink >() );
 
-   auto file_name = p.string() + "/" + file_pattern;
+   auto file_name = path.string() + "/" + file_pattern;
 
    boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >( SEVERITY_ATTR );
 
@@ -165,7 +167,7 @@ void initialize_logging(
       boost::log::keywords::file_name = file_name,
       boost::log::keywords::rotation_size = 1 * 1024 * 1024,
       boost::log::keywords::max_size = 20 * 1024 * 1024,
-      boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point(0, 0, 0),
+      boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point( 0, 0, 0 ),
       boost::log::keywords::format = "%" TIMESTAMP_ATTR "% (%" SERVICE_ID_ATTR "%) [%" FILE_ATTR "%:%" LINE_ATTR "%] <%" SEVERITY_ATTR "%>: %" MESSAGE_ATTR "%",
       boost::log::keywords::auto_flush = true
    );
@@ -173,34 +175,44 @@ void initialize_logging(
    boost::log::add_common_attributes();
    boost::log::core::get()->add_global_attribute( SERVICE_ID_ATTR, boost::log::attributes::constant< std::string >( service_id ) );
 
-   if ( !level.compare( TRACE_STRING ) )
+   boost::log::core::get()->set_filter( boost::log::trivial::severity >= filter_level );
+}
+
+std::istream& operator>>( std::istream &in, log_level& l )
+{
+   std::string token;
+   in >> token;
+
+   if ( token == TRACE_STRING )
    {
-      boost::log::core::get()->set_filter( boost::log::trivial::severity >= boost::log::trivial::trace );
+      l = log_level::trace;
    }
-   else if ( !level.compare( DEBUG_STRING) )
+   else if ( token == DEBUG_STRING )
    {
-      boost::log::core::get()->set_filter( boost::log::trivial::severity >= boost::log::trivial::debug );
+      l = log_level::debug;
    }
-   else if ( !level.compare( INFO_STRING) )
+   else if ( token == INFO_STRING )
    {
-      boost::log::core::get()->set_filter( boost::log::trivial::severity >= boost::log::trivial::info );
+      l = log_level::info;
    }
-   else if ( !level.compare( WARNING_STRING) )
+   else if ( token == WARNING_STRING )
    {
-      boost::log::core::get()->set_filter( boost::log::trivial::severity >= boost::log::trivial::warning );
+      l = log_level::warning;
    }
-   else if ( !level.compare( ERROR_STRING) )
+   else if ( token == ERROR_STRING )
    {
-      boost::log::core::get()->set_filter( boost::log::trivial::severity >= boost::log::trivial::error );
+      l = log_level::error;
    }
-   else if ( !level.compare( FATAL_STRING) )
+   else if ( token == FATAL_STRING )
    {
-      boost::log::core::get()->set_filter( boost::log::trivial::severity >= boost::log::trivial::fatal );
+      l = log_level::fatal;
    }
    else
    {
-      boost::log::core::get()->set_filter( boost::log::trivial::severity >= boost::log::trivial::info );
+      throw std::runtime_error( "invalid log level" );
    }
+
+   return in;
 }
 
 } // koinos

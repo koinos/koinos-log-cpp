@@ -1,4 +1,8 @@
 #pragma once
+
+#include <optional>
+#include <istream>
+
 #include <boost/filesystem/path.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup.hpp>
@@ -14,12 +18,17 @@ BOOST_LOG_SEV(::boost::log::trivial::logger::get(), boost::log::trivial::LEVEL) 
 
 namespace koinos {
 
+using log_level = boost::log::trivial::severity_level;
+
+// For use with boost program options
+std::istream& operator>>( std::istream &in, log_level& l );
+
 void initialize_logging(
    const boost::filesystem::path& p,
    const std::string& file_pattern,
    const std::string& application_name,
-   const std::string& level = "info",
-   const std::string& identifier = std::string{},
+   const std::optional< std::string >& identifier = {},
+   log_level filter_level = log_level::info,
    bool color = true );
 
 } // koinos

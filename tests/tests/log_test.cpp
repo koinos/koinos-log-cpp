@@ -11,15 +11,6 @@ struct log_fixture{};
 
 BOOST_FIXTURE_TEST_SUITE( log_tests, log_fixture )
 
-BOOST_AUTO_TEST_CASE( get_log_directory_tests )
-{
-   BOOST_TEST_MESSAGE( "Testing get_log_directory" );
-
-   std::string log_dir_str = "/root/service/log";
-   auto log_dir = koinos::get_log_directory( std::filesystem::path{ "/root" }, "service" );
-   BOOST_CHECK_EQUAL( log_dir.string(), log_dir_str );
-}
-
 BOOST_AUTO_TEST_CASE( log_level_stream_operator_tests )
 {
    BOOST_TEST_MESSAGE( "Testing log level stream operator" );
@@ -60,7 +51,6 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   std::filesystem::create_directory( temp );
    std::string string_level = "trace";
    std::istringstream iss( string_level );
    koinos::log_level lvl;
@@ -133,7 +123,6 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   std::filesystem::create_directory( temp );
    koinos::initialize_logging( temp, "log_test", "9abcd", koinos::log_level::trace, "log_test_no_color_%3N.log", false /* no color */ );
 
    LOG( trace )   << "test";
@@ -198,7 +187,6 @@ BOOST_AUTO_TEST_CASE( log_filter_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   std::filesystem::create_directory( temp );
    koinos::initialize_logging( temp, "log_test", "9abcd", koinos::log_level::warning, "log_test_no_color_%3N.log", false /* no color */ );
 
    LOG( trace )   << "test";

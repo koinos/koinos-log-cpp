@@ -24,8 +24,6 @@ using log_level = boost::log::trivial::severity_level;
 // For use with boost program options
 std::istream& operator>>( std::istream &in, log_level& l );
 
-std::filesystem::path get_log_directory( const std::filesystem::path& basedir, const std::string& service );
-
 void initialize_logging(
    const std::filesystem::path& log_directory,
    const std::string& application_name,

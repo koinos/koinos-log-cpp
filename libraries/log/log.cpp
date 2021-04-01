@@ -114,11 +114,6 @@ public:
    }
 };
 
-std::filesystem::path get_log_directory( const std::filesystem::path& basedir, const std::string& service )
-{
-   return basedir / service / "log";
-}
-
 void initialize_logging(
    const std::filesystem::path& log_directory,
    const std::string& application_name,

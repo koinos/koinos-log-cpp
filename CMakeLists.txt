@@ -85,11 +85,11 @@ if(COVERAGE)
      EXCLUDE "libraries/vendor/*" "build/generated/*")
 endif()
 
-hunter_add_package(Boost COMPONENTS log filesystem test)
+hunter_add_package(Boost COMPONENTS log test)
 
 hunter_add_package(koinos_util)
 
-find_package(Boost CONFIG REQUIRED log log_setup filesystem)
+find_package(Boost CONFIG REQUIRED log log_setup)
 
 find_package(koinos_util CONFIG REQUIRED)
 

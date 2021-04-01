@@ -1,5 +1,4 @@
 #include <boost/test/unit_test.hpp>
-#include <boost/filesystem.hpp>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -12,7 +11,16 @@ struct log_fixture{};
 
 BOOST_FIXTURE_TEST_SUITE( log_tests, log_fixture )
 
-BOOST_AUTO_TEST_CASE( log_level_stream_operator )
+BOOST_AUTO_TEST_CASE( get_log_directory_tests )
+{
+   BOOST_TEST_MESSAGE( "Testing get_log_directory" );
+
+   std::string log_dir_str = "/root/service/log";
+   auto log_dir = koinos::get_log_directory( std::filesystem::path{ "/root" }, "service" );
+   BOOST_CHECK_EQUAL( log_dir.string(), log_dir_str );
+}
+
+BOOST_AUTO_TEST_CASE( log_level_stream_operator_tests )
 {
    BOOST_TEST_MESSAGE( "Testing log level stream operator" );
    std::string string_level = "trace debug info warning error fatal";
@@ -51,14 +59,14 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
        "<\033[31munknown\033[0m>"
    };
 
-   auto temp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
-   boost::filesystem::create_directory( temp );
+   auto temp = std::filesystem::temp_directory_path() / "log";
+   std::filesystem::create_directory( temp );
    std::string string_level = "trace";
    std::istringstream iss( string_level );
    koinos::log_level lvl;
    iss >> lvl;
    BOOST_ASSERT( lvl == koinos::log_level::trace );
-   koinos::initialize_logging( temp, "log_test_color_%3N.log", "log_test", "9abcd", lvl );
+   koinos::initialize_logging( temp, "log_test", {}, lvl, "log_test_color_%3N.log" );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -124,9 +132,9 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
        "<unknown>"
    };
 
-   auto temp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
-   boost::filesystem::create_directory( temp );
-   koinos::initialize_logging( temp, "log_test_no_color_%3N.log", "log_test", "9abcd", koinos::log_level::trace, false /* no color */ );
+   auto temp = std::filesystem::temp_directory_path() / "log";
+   std::filesystem::create_directory( temp );
+   koinos::initialize_logging( temp, "log_test", "9abcd", koinos::log_level::trace, "log_test_no_color_%3N.log", false /* no color */ );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";

@@ -114,12 +114,17 @@ public:
    }
 };
 
+std::filesystem::path get_log_directory( const std::filesystem::path& basedir, const std::string& service )
+{
+   return basedir / service / "log";
+}
+
 void initialize_logging(
-   const boost::filesystem::path& path,
-   const std::string& file_pattern,
+   const std::filesystem::path& log_directory,
    const std::string& application_name,
    const std::optional< std::string >& identifier,
    log_level filter_level,
+   const std::string& file_pattern,
    bool color )
 {
    using console_sink       = boost::log::sinks::synchronous_sink< console_sink_impl< false > >;
@@ -139,7 +144,7 @@ void initialize_logging(
    else
       boost::log::core::get()->add_sink( boost::make_shared< console_sink >() );
 
-   auto file_name = path.string() + "/" + file_pattern;
+   auto file_name = log_directory.string() + "/" + file_pattern;
 
    boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >( SEVERITY_ATTR );
 

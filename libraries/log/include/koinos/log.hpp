@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <optional>
 #include <istream>
 
@@ -23,12 +24,14 @@ using log_level = boost::log::trivial::severity_level;
 // For use with boost program options
 std::istream& operator>>( std::istream &in, log_level& l );
 
+std::filesystem::path get_log_directory( const std::filesystem::path& basedir, const std::string& service );
+
 void initialize_logging(
-   const boost::filesystem::path& p,
-   const std::string& file_pattern,
+   const std::filesystem::path& log_directory,
    const std::string& application_name,
    const std::optional< std::string >& identifier = {},
    log_level filter_level = log_level::info,
+   const std::string& file_pattern = "%3N.log",
    bool color = true );
 
 } // koinos

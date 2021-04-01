@@ -115,10 +115,10 @@ public:
 };
 
 void initialize_logging(
-   const std::filesystem::path& log_directory,
    const std::string& application_name,
    const std::optional< std::string >& identifier,
    log_level filter_level,
+   const std::optional< std::filesystem::path >& log_directory,
    const std::string& file_pattern,
    bool color )
 {
@@ -139,20 +139,23 @@ void initialize_logging(
    else
       boost::log::core::get()->add_sink( boost::make_shared< console_sink >() );
 
-   auto file_name = log_directory.string() + "/" + file_pattern;
-
    boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >( SEVERITY_ATTR );
 
-   // Output message to file, rotates when file reached 1mb or at midnight every day. Each log file
-   // is capped at 1mb and total is 20mb
-   boost::log::add_file_log(
-      boost::log::keywords::file_name = file_name,
-      boost::log::keywords::rotation_size = 1 * 1024 * 1024,
-      boost::log::keywords::max_size = 20 * 1024 * 1024,
-      boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point( 0, 0, 0 ),
-      boost::log::keywords::format = "%" TIMESTAMP_ATTR "% (%" SERVICE_ID_ATTR "%) [%" FILE_ATTR "%:%" LINE_ATTR "%] <%" SEVERITY_ATTR "%>: %" MESSAGE_ATTR "%",
-      boost::log::keywords::auto_flush = true
-   );
+   if ( log_directory.has_value() )
+   {
+      auto file_name = log_directory.value().string() + "/" + file_pattern;
+
+      // Output message to file, rotates when file reached 1mb or at midnight every day. Each log file
+      // is capped at 1mb and total is 20mb
+      boost::log::add_file_log(
+         boost::log::keywords::file_name = file_name,
+         boost::log::keywords::rotation_size = 1 * 1024 * 1024,
+         boost::log::keywords::max_size = 20 * 1024 * 1024,
+         boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point( 0, 0, 0 ),
+         boost::log::keywords::format = "%" TIMESTAMP_ATTR "% (%" SERVICE_ID_ATTR "%) [%" FILE_ATTR "%:%" LINE_ATTR "%] <%" SEVERITY_ATTR "%>: %" MESSAGE_ATTR "%",
+         boost::log::keywords::auto_flush = true
+      );
+   }
 
    boost::log::add_common_attributes();
    boost::log::core::get()->add_global_attribute( SERVICE_ID_ATTR, boost::log::attributes::constant< std::string >( service_id ) );

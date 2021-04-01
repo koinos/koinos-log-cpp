@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
    koinos::log_level lvl;
    iss >> lvl;
    BOOST_ASSERT( lvl == koinos::log_level::trace );
-   koinos::initialize_logging( temp, "log_test", {}, lvl, "log_test_color_%3N.log" );
+   koinos::initialize_logging( "log_test", {}, lvl, temp, "log_test_color_%3N.log" );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   koinos::initialize_logging( temp, "log_test", "9abcd", koinos::log_level::trace, "log_test_no_color_%3N.log", false /* no color */ );
+   koinos::initialize_logging( "log_test", "9abcd", koinos::log_level::trace, temp, "log_test_no_color_%3N.log", false /* no color */ );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE( log_filter_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   koinos::initialize_logging( temp, "log_test", "9abcd", koinos::log_level::warning, "log_test_no_color_%3N.log", false /* no color */ );
+   koinos::initialize_logging( "log_test", "9abcd", koinos::log_level::warning, temp, "log_test_no_color_%3N.log", false /* no color */ );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";

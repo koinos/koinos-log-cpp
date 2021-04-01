@@ -25,10 +25,10 @@ using log_level = boost::log::trivial::severity_level;
 std::istream& operator>>( std::istream &in, log_level& l );
 
 void initialize_logging(
-   const std::filesystem::path& log_directory,
    const std::string& application_name,
    const std::optional< std::string >& identifier = {},
    log_level filter_level = log_level::info,
+   const std::optional< std::filesystem::path >& log_directory = {},
    const std::string& file_pattern = "%3N.log",
    bool color = true );
 

@@ -37,8 +37,8 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
 {
    BOOST_TEST_MESSAGE( "Testing logging library with color" );
    std::stringstream stream;
-   auto buf = std::cout.rdbuf();
-   std::cout.rdbuf( stream.rdbuf() );
+   auto buf = std::clog.rdbuf();
+   std::clog.rdbuf( stream.rdbuf() );
 
    std::vector< std::string > logtypes {
        "<\033[32mtrace\033[0m>",
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
    results.pop_back();
 
    // Setting std::cout back to normal
-   std::cout.rdbuf( buf );
+   std::clog.rdbuf( buf );
 
    BOOST_REQUIRE_EQUAL( "<trace>: test", expected_string );
 
@@ -109,8 +109,8 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
 {
    BOOST_TEST_MESSAGE( "Testing logging library without color" );
    std::stringstream stream;
-   auto buf = std::cout.rdbuf();
-   std::cout.rdbuf( stream.rdbuf() );
+   auto buf = std::clog.rdbuf();
+   std::clog.rdbuf( stream.rdbuf() );
 
    std::vector< std::string > logtypes {
        "<trace>",
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
    results.pop_back();
 
    // Setting std::cout back to normal
-   std::cout.rdbuf( buf );
+   std::clog.rdbuf( buf );
 
    BOOST_REQUIRE_EQUAL( "<trace>: test", expected_string );
 
@@ -176,8 +176,8 @@ BOOST_AUTO_TEST_CASE( log_filter_tests )
 {
    BOOST_TEST_MESSAGE( "Testing log filtering" );
    std::stringstream stream;
-   auto buf = std::cout.rdbuf();
-   std::cout.rdbuf( stream.rdbuf() );
+   auto buf = std::clog.rdbuf();
+   std::clog.rdbuf( stream.rdbuf() );
 
    std::vector< std::string > logtypes {
        "<warning>",
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE( log_filter_tests )
    results.pop_back();
 
    // Setting std::cout back to normal
-   std::cout.rdbuf( buf );
+   std::clog.rdbuf( buf );
 
    BOOST_REQUIRE_EQUAL( "<warning>: test", expected_string );
 

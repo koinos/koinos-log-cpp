@@ -70,7 +70,7 @@ public:
       auto line   = rec.attribute_values()[ LINE_ATTR ].extract< int >();
       auto file   = rec.attribute_values()[ FILE_ATTR ].extract< std::string >();
       auto ptime  = rec.attribute_values()[ TIMESTAMP_ATTR ].extract< boost::posix_time::ptime >().get();
-      auto& s     = std::cout;
+      auto& s     = std::clog;
 
       auto time = ptime.time_of_day();
       auto date = ptime.date();

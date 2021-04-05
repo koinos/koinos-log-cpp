@@ -4,7 +4,6 @@
 #include <optional>
 #include <istream>
 
-#include <boost/filesystem/path.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup.hpp>
 #include <boost/log/sources/global_logger_storage.hpp>

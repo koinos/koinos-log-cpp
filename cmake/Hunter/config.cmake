@@ -5,3 +5,10 @@ hunter_config(Boost
    Boost_USE_STATIC_LIBS=ON
    Boost_NO_BOOST_CMAKE=ON
 )
+
+hunter_config(koinos_util
+   GIT_SUBMODULE "libraries/util"
+   CMAKE_ARGS
+      BUILD_TESTS=OFF
+)
+

@@ -1,5 +1,9 @@
 #pragma once
-#include <boost/filesystem/path.hpp>
+
+#include <filesystem>
+#include <optional>
+#include <istream>
+
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup.hpp>
 #include <boost/log/sources/global_logger_storage.hpp>
@@ -12,4 +16,19 @@ BOOST_LOG_SEV(::boost::log::trivial::logger::get(), boost::log::trivial::LEVEL) 
   << boost::log::add_value("Line", __LINE__)                                               \
   << boost::log::add_value("File", boost::filesystem::path(__FILE__).filename().string())  \
 
-namespace koinos { void initialize_logging( const boost::filesystem::path& p, const std::string& file_pattern, bool color = true ); }
+namespace koinos {
+
+using log_level = boost::log::trivial::severity_level;
+
+// For use with boost program options
+std::istream& operator>>( std::istream &in, log_level& l );
+
+void initialize_logging(
+   const std::string& application_name,
+   const std::optional< std::string >& identifier = {},
+   log_level filter_level = log_level::info,
+   const std::optional< std::filesystem::path >& log_directory = {},
+   const std::string& file_pattern = "%3N.log",
+   bool color = true );
+
+} // koinos

@@ -11,28 +11,6 @@ struct log_fixture{};
 
 BOOST_FIXTURE_TEST_SUITE( log_tests, log_fixture )
 
-BOOST_AUTO_TEST_CASE( log_level_stream_operator_tests )
-{
-   BOOST_TEST_MESSAGE( "Testing log level stream operator" );
-   std::string string_level = "trace debug info warning error fatal";
-   std::vector< koinos::log_level > levels {
-      koinos::log_level::trace,
-      koinos::log_level::debug,
-      koinos::log_level::info,
-      koinos::log_level::warning,
-      koinos::log_level::error,
-      koinos::log_level::fatal
-   };
-
-   std::istringstream iss( string_level );
-   for ( auto& level : levels )
-   {
-      koinos::log_level lvl;
-      iss >> lvl;
-      BOOST_REQUIRE_EQUAL( lvl, level );
-   }
-}
-
 BOOST_AUTO_TEST_CASE( log_color_tests )
 {
    BOOST_TEST_MESSAGE( "Testing logging library with color" );
@@ -51,12 +29,7 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   std::string string_level = "trace";
-   std::istringstream iss( string_level );
-   koinos::log_level lvl;
-   iss >> lvl;
-   BOOST_ASSERT( lvl == koinos::log_level::trace );
-   koinos::initialize_logging( "log_test", {}, lvl, temp, "log_test_color_%3N.log" );
+   koinos::initialize_logging( "log_test", {}, "trace", temp, "log_test_color_%3N.log" );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -123,7 +96,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   koinos::initialize_logging( "log_test", "9abcd", koinos::log_level::trace, temp, "log_test_no_color_%3N.log", false /* no color */ );
+   koinos::initialize_logging( "log_test", "9abcd", "trace", temp, "log_test_no_color_%3N.log", false /* no color */ );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -187,7 +160,7 @@ BOOST_AUTO_TEST_CASE( log_filter_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   koinos::initialize_logging( "log_test", "9abcd", koinos::log_level::warning, temp, "log_test_no_color_%3N.log", false /* no color */ );
+   koinos::initialize_logging( "log_test", "9abcd", "warning", temp, "log_test_no_color_%3N.log", false /* no color */ );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";

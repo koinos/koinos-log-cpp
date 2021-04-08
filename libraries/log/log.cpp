@@ -88,22 +88,22 @@ public:
       s << "<";
       switch ( level.get() )
       {
-         case log_level::trace:
+         case boost::log::trivial::severity_level::trace:
             s << colorize( TRACE_STRING, color::green );
             break;
-         case log_level::debug:
+         case boost::log::trivial::severity_level::debug:
             s << colorize( DEBUG_STRING, color::green );
             break;
-         case log_level::info:
+         case boost::log::trivial::severity_level::info:
             s << colorize( INFO_STRING, color::green );
             break;
-         case log_level::warning:
+         case boost::log::trivial::severity_level::warning:
             s << colorize( WARNING_STRING, color::yellow );
             break;
-         case log_level::error:
+         case boost::log::trivial::severity_level::error:
             s << colorize( ERROR_STRING, color::red );
             break;
-         case log_level::fatal:
+         case boost::log::trivial::severity_level::fatal:
             s << colorize( FATAL_STRING, color::red );
             break;
          default:
@@ -114,10 +114,46 @@ public:
    }
 };
 
+boost::log::trivial::severity_level level_from_string( const std::string& token )
+{
+   boost::log::trivial::severity_level l;
+
+   if ( token == TRACE_STRING )
+   {
+      l = boost::log::trivial::severity_level::trace;
+   }
+   else if ( token == DEBUG_STRING )
+   {
+      l = boost::log::trivial::severity_level::debug;
+   }
+   else if ( token == INFO_STRING )
+   {
+      l = boost::log::trivial::severity_level::info;
+   }
+   else if ( token == WARNING_STRING )
+   {
+      l = boost::log::trivial::severity_level::warning;
+   }
+   else if ( token == ERROR_STRING )
+   {
+      l = boost::log::trivial::severity_level::error;
+   }
+   else if ( token == FATAL_STRING )
+   {
+      l = boost::log::trivial::severity_level::fatal;
+   }
+   else
+   {
+      throw std::runtime_error( "invalid log level" );
+   }
+
+   return l;
+}
+
 void initialize_logging(
    const std::string& application_name,
    const std::optional< std::string >& identifier,
-   log_level filter_level,
+   const std::string& filter_level,
    const std::optional< std::filesystem::path >& log_directory,
    const std::string& file_pattern,
    bool color )
@@ -160,44 +196,7 @@ void initialize_logging(
    boost::log::add_common_attributes();
    boost::log::core::get()->add_global_attribute( SERVICE_ID_ATTR, boost::log::attributes::constant< std::string >( service_id ) );
 
-   boost::log::core::get()->set_filter( boost::log::trivial::severity >= filter_level );
-}
-
-std::istream& operator>>( std::istream &in, log_level& l )
-{
-   std::string token;
-   in >> token;
-
-   if ( token == TRACE_STRING )
-   {
-      l = log_level::trace;
-   }
-   else if ( token == DEBUG_STRING )
-   {
-      l = log_level::debug;
-   }
-   else if ( token == INFO_STRING )
-   {
-      l = log_level::info;
-   }
-   else if ( token == WARNING_STRING )
-   {
-      l = log_level::warning;
-   }
-   else if ( token == ERROR_STRING )
-   {
-      l = log_level::error;
-   }
-   else if ( token == FATAL_STRING )
-   {
-      l = log_level::fatal;
-   }
-   else
-   {
-      throw std::runtime_error( "invalid log level" );
-   }
-
-   return in;
+   boost::log::core::get()->set_filter( boost::log::trivial::severity >= level_from_string( filter_level ) );
 }
 
 } // koinos

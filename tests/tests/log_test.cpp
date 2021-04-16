@@ -19,8 +19,8 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
    std::clog.rdbuf( stream.rdbuf() );
 
    std::vector< std::string > logtypes {
-       "<\033[32mtrace\033[0m>",
-       "<\033[32mdebug\033[0m>",
+       "<\033[34mtrace\033[0m>",
+       "<\033[34mdebug\033[0m>",
        "<\033[32minfo\033[0m>",
        "<\033[33mwarning\033[0m>",
        "<\033[31merror\033[0m>",

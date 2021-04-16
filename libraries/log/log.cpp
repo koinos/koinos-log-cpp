@@ -33,7 +33,8 @@ class console_sink_impl : public boost::log::sinks::basic_formatted_sink_backend
    {
       green,
       yellow,
-      red
+      red,
+      blue
    };
 
    static std::string colorize( const std::string& s, color c )
@@ -53,6 +54,9 @@ class console_sink_impl : public boost::log::sinks::basic_formatted_sink_backend
             break;
          case color::red:
             val += "\033[31m";
+            break;
+         case color::blue:
+            val += "\033[34m";
             break;
       }
 
@@ -89,10 +93,10 @@ public:
       switch ( level.get() )
       {
          case boost::log::trivial::severity_level::trace:
-            s << colorize( TRACE_STRING, color::green );
+            s << colorize( TRACE_STRING, color::blue );
             break;
          case boost::log::trivial::severity_level::debug:
-            s << colorize( DEBUG_STRING, color::green );
+            s << colorize( DEBUG_STRING, color::blue );
             break;
          case boost::log::trivial::severity_level::info:
             s << colorize( INFO_STRING, color::green );

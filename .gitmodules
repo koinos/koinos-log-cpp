@@ -1,3 +1,0 @@
-[submodule "libraries/util"]
-	path = libraries/util
-	url = https://github.com/koinos/koinos-util-cpp.git

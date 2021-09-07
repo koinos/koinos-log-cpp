@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <optional>
+#include <ostream>
 #include <istream>
 
 #include <boost/log/trivial.hpp>
@@ -11,10 +12,16 @@
 #include <boost/log/attributes/mutable_constant.hpp>
 #include <boost/log/utility/manipulators/add_value.hpp>
 
+#include <google/protobuf/message.h>
+#include <google/protobuf/text_format.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
 #define LOG(LEVEL)                                                                         \
 BOOST_LOG_SEV(::boost::log::trivial::logger::get(), boost::log::trivial::LEVEL)            \
   << boost::log::add_value("Line", __LINE__)                                               \
   << boost::log::add_value("File", boost::filesystem::path(__FILE__).filename().string())  \
+
+std::ostream& operator<<( std::ostream& os, const google::protobuf::Message& m );
 
 namespace koinos {
 

@@ -86,11 +86,11 @@ if(COVERAGE)
 endif()
 
 hunter_add_package(Boost COMPONENTS log test)
-
+hunter_add_package(Protobuf)
 hunter_add_package(koinos_util)
 
 find_package(Boost CONFIG REQUIRED log log_setup)
-
+find_package(Protobuf CONFIG REQUIRED)
 find_package(koinos_util CONFIG REQUIRED)
 
 add_subdirectory(libraries)

@@ -26,6 +26,21 @@
 
 namespace koinos {
 
+class KoinosFieldValuePrinter : public google::protobuf::TextFormat::FastFieldValuePrinter
+{
+public:
+   virtual void PrintBytes( const std::string& val, google::protobuf::TextFormat::BaseTextGenerator* generator ) const override
+   {
+      std::stringstream stream;
+      stream << "0x" << std::hex << std::setfill( '0' );
+      for ( const auto& c : val )
+      {
+         stream << std::setw( 2 ) << static_cast< unsigned int >( static_cast< unsigned char >( c ) );
+      }
+      generator->PrintString( stream.str() );
+   }
+};
+
 template< bool Color >
 class console_sink_impl : public boost::log::sinks::basic_formatted_sink_backend< char, boost::log::sinks::synchronized_feeding >
 {
@@ -204,3 +219,13 @@ void initialize_logging(
 }
 
 } // koinos
+
+std::ostream& operator<<( std::ostream& os, const google::protobuf::Message& m )
+{
+   google::protobuf::TextFormat::Printer printer;
+   printer.SetSingleLineMode( true );
+   printer.SetDefaultFieldValuePrinter( new koinos::KoinosFieldValuePrinter() );
+   auto ost = google::protobuf::io::OstreamOutputStream( &os );
+   printer.Print( m, &ost );
+   return os;
+}

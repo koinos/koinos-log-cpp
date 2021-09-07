@@ -223,6 +223,9 @@ void initialize_logging(
 
 } // koinos
 
+namespace google::protobuf
+{
+
 std::ostream& operator<<( std::ostream& os, const google::protobuf::Message& m )
 {
    google::protobuf::TextFormat::Printer printer;
@@ -232,3 +235,5 @@ std::ostream& operator<<( std::ostream& os, const google::protobuf::Message& m )
    printer.Print( m, &ost );
    return os;
 }
+
+} // google::protobuf

@@ -14,7 +14,10 @@
 
 #include <google/protobuf/message.h>
 
-std::ostream& operator<<( std::ostream& os, const google::protobuf::Message& m );
+namespace google::protobuf
+{
+   std::ostream& operator<<( std::ostream& os, const google::protobuf::Message& m );
+}
 
 #define LOG(LEVEL)                                                                         \
 BOOST_LOG_SEV(::boost::log::trivial::logger::get(), boost::log::trivial::LEVEL)            \

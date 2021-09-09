@@ -34,13 +34,7 @@ class KoinosFieldValuePrinter : public google::protobuf::TextFormat::FastFieldVa
 public:
    virtual void PrintBytes( const std::string& val, google::protobuf::TextFormat::BaseTextGenerator* generator ) const override
    {
-      std::stringstream stream;
-      stream << "0x" << std::hex << std::setfill( '0' );
-      for ( const auto& c : val )
-      {
-         stream << std::setw( 2 ) << static_cast< unsigned int >( static_cast< unsigned char >( c ) );
-      }
-      generator->PrintString( stream.str() );
+      generator->PrintString( to_hex( val ) );
    }
 };
 

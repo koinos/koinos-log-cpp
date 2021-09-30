@@ -10,6 +10,9 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 
+#include <google/protobuf/text_format.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
 #define TRACE_STRING    "trace"
 #define DEBUG_STRING    "debug"
 #define INFO_STRING     "info"
@@ -25,6 +28,15 @@
 #define MESSAGE_ATTR    "Message"
 
 namespace koinos {
+
+class KoinosFieldValuePrinter : public google::protobuf::TextFormat::FastFieldValuePrinter
+{
+public:
+   virtual void PrintBytes( const std::string& val, google::protobuf::TextFormat::BaseTextGenerator* generator ) const override
+   {
+      generator->PrintString( to_hex( val ) );
+   }
+};
 
 template< bool Color >
 class console_sink_impl : public boost::log::sinks::basic_formatted_sink_backend< char, boost::log::sinks::synchronized_feeding >
@@ -204,3 +216,18 @@ void initialize_logging(
 }
 
 } // koinos
+
+namespace google::protobuf
+{
+
+std::ostream& operator<<( std::ostream& os, const google::protobuf::Message& m )
+{
+   google::protobuf::TextFormat::Printer printer;
+   printer.SetSingleLineMode( true );
+   printer.SetDefaultFieldValuePrinter( new koinos::KoinosFieldValuePrinter() );
+   auto ost = google::protobuf::io::OstreamOutputStream( &os );
+   printer.Print( m, &ost );
+   return os;
+}
+
+} // google::protobuf

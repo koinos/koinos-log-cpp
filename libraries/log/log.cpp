@@ -1,5 +1,6 @@
 #include <koinos/log.hpp>
-#include <koinos/util.hpp>
+#include <koinos/util/hex.hpp>
+#include <koinos/util/random.hpp>
 
 #include <iostream>
 #include <string>
@@ -34,7 +35,7 @@ class KoinosFieldValuePrinter : public google::protobuf::TextFormat::FastFieldVa
 public:
    virtual void PrintBytes( const std::string& val, google::protobuf::TextFormat::BaseTextGenerator* generator ) const override
    {
-      generator->PrintString( to_hex( val ) );
+      generator->PrintString( util::to_hex( val ) );
    }
 };
 
@@ -182,7 +183,7 @@ void initialize_logging(
    if ( identifier.has_value() )
       id = identifier.value();
    else
-      id = random_alphanumeric( 5 );
+      id = util::random_alphanumeric( 5 );
 
    std::string service_id = application_name + "." + id;
 

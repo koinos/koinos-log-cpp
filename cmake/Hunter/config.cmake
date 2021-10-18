@@ -6,10 +6,24 @@ hunter_config(Boost
       Boost_NO_BOOST_CMAKE=ON
 )
 
+hunter_config(Protobuf
+   URL  "https://github.com/koinos/protobuf/archive/e1b1477875a8b022903b548eb144f2c7bf4d9561.tar.gz"
+   SHA1 "5796707a98eec15ffb3ad86ff50e8eec5fa65e68"
+   CMAKE_ARGS
+      CMAKE_CXX_FLAGS=-fvisibility=hidden
+      CMAKE_C_FLAGS=-fvisibility=hidden
+)
+
+hunter_config(yaml-cpp
+   VERSION "0.6.3"
+   CMAKE_ARGS
+      CMAKE_CXX_FLAGS=-fvisibility=hidden
+      CMAKE_C_FLAGS=-fvisibility=hidden
+)
+
 hunter_config(koinos_util
-   URL  "https://github.com/koinos/koinos-util-cpp/archive/bc509581b6859c84bfc8aadeb1ae4cda1bcedd14.tar.gz"
-   SHA1 "0bb9ba9f56175360d499e5f6fa4caf59445ee69f"
+   URL  "https://github.com/koinos/koinos-util-cpp/archive/86730d4bde45021921b087a5c0d19a01056939d7.tar.gz"
+   SHA1 "8c2cc5f7f25e95a1083d4a184243e6c054a0d9ba"
    CMAKE_ARGS
       BUILD_TESTS=OFF
 )
-

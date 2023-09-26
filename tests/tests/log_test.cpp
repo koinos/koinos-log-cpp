@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   koinos::initialize_logging( "log_test", {}, "trace", temp, "log_test_color_%3N.log" );
+   koinos::initialize_logging( "log_test_color", {}, "trace", temp, true );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
       << boost::log::add_value("Line", __LINE__)
       << boost::log::add_value("File", boost::filesystem::path(__FILE__).filename().string()) << "test";
 
-   auto file_path = temp / "log_test_color_000.log";
+   auto file_path = temp / "log_test_color.log";
    std::ifstream file( file_path.string() );
    BOOST_REQUIRE( file.is_open() );
 
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   koinos::initialize_logging( "log_test", "9abcd", "trace", temp, "log_test_no_color_%3N.log", false /* no color */ );
+   koinos::initialize_logging( "log_test", "9abcd", "trace", temp );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
       << boost::log::add_value("Line", __LINE__)
       << boost::log::add_value("File", boost::filesystem::path(__FILE__).filename().string()) << "test";
 
-   auto file_path = temp / "log_test_no_color_000.log";
+   auto file_path = temp / "log_test.log";
    std::ifstream file( file_path.string() );
    BOOST_REQUIRE( file.is_open() );
 
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE( log_filter_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   koinos::initialize_logging( "log_test", "9abcd", "warning", temp, "log_test_no_color_%3N.log", false /* no color */ );
+   koinos::initialize_logging( "log_test_filter", "9abcd", "warning", temp, false );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE( log_filter_tests )
       << boost::log::add_value("Line", __LINE__)
       << boost::log::add_value("File", boost::filesystem::path(__FILE__).filename().string()) << "test";
 
-   auto file_path = temp / "log_test_no_color_000.log";
+   auto file_path = temp / "log_test_filter.log";
    std::ifstream file( file_path.string() );
    BOOST_REQUIRE( file.is_open() );
 

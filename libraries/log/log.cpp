@@ -201,8 +201,8 @@ void initialize_logging(
          boost::log::keywords::file_name = log_directory.value().string() + "/" + application_name + ".log",
          boost::log::keywords::target_file_name = log_directory.value().string() + "/" + application_name + "-%Y-%m-%dT%H-%M-%S.%N.log",
          boost::log::keywords::rotation_size = 1 * 1024,
-         boost::log::keywords::max_size = 100 * 1024,
-         boost::log::keywords::max_files = 100,
+         boost::log::keywords::max_size = 10 * 1024,
+         boost::log::keywords::max_files = 10,
          boost::log::keywords::format = "%" TIMESTAMP_ATTR "% (%" SERVICE_ID_ATTR "%) [%" FILE_ATTR "%:%" LINE_ATTR "%] <%" SEVERITY_ATTR "%>: %" MESSAGE_ATTR "%",
          boost::log::keywords::auto_flush = true
       );

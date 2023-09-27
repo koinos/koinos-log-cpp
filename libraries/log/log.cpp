@@ -198,8 +198,9 @@ void initialize_logging(
       // Output message to file, rotates when file reached 1mb. Each log file
       // is capped at 1mb and total is 100mb and 100 files.
       boost::log::add_file_log(
-         boost::log::keywords::file_name = log_directory.value().string() + "/" + application_name + ".log",
-         boost::log::keywords::target_file_name = log_directory.value().string() + "/" + application_name + "-%Y-%m-%dT%H-%M-%S.%N.log",
+         boost::log::keywords::file_name = log_directory->string() + "/" + application_name + ".log",
+         boost::log::keywords::target_file_name = log_directory->string() + "/" + application_name + "-%Y-%m-%dT%H-%M-%S.%f.log",
+         boost::log::keywords::target = log_directory->string(),
          boost::log::keywords::rotation_size = 1 * 1024,
          boost::log::keywords::max_size = 10 * 1024,
          boost::log::keywords::max_files = 10,

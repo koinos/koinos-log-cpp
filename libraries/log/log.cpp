@@ -172,7 +172,6 @@ void initialize_logging(
    const std::optional< std::string >& identifier,
    const std::string& filter_level,
    const std::optional< std::filesystem::path >& log_directory,
-   const std::string& file_pattern,
    bool color )
 {
    using console_sink       = boost::log::sinks::synchronous_sink< console_sink_impl< false > >;
@@ -196,15 +195,15 @@ void initialize_logging(
 
    if ( log_directory.has_value() )
    {
-      auto file_name = log_directory.value().string() + "/" + file_pattern;
-
-      // Output message to file, rotates when file reached 1mb or at midnight every day. Each log file
-      // is capped at 1mb and total is 20mb
+      // Output message to file, rotates when file reached 1mb. Each log file
+      // is capped at 1mb and total is 100mb and 100 files.
       boost::log::add_file_log(
-         boost::log::keywords::file_name = file_name,
+         boost::log::keywords::file_name = log_directory->string() + "/" + application_name + ".log",
+         boost::log::keywords::target_file_name = log_directory->string() + "/" + application_name + "-%Y-%m-%dT%H-%M-%S.%f.log",
+         boost::log::keywords::target = log_directory->string(),
          boost::log::keywords::rotation_size = 1 * 1024 * 1024,
-         boost::log::keywords::max_size = 20 * 1024 * 1024,
-         boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point( 0, 0, 0 ),
+         boost::log::keywords::max_size = 100 * 1024 * 1024,
+         boost::log::keywords::max_files = 100,
          boost::log::keywords::format = "%" TIMESTAMP_ATTR "% (%" SERVICE_ID_ATTR "%) [%" FILE_ATTR "%:%" LINE_ATTR "%] <%" SEVERITY_ATTR "%>: %" MESSAGE_ATTR "%",
          boost::log::keywords::auto_flush = true
       );

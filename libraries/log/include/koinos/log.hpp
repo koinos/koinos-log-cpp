@@ -31,6 +31,7 @@ void initialize_logging(
    const std::optional< std::string >& identifier = {},
    const std::string& filter_level = "info",
    const std::optional< std::filesystem::path >& log_directory = {},
-   bool color = false );
+   bool color = true,
+   bool datetime = true );
 
 } // koinos

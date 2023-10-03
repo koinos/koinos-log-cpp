@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
    };
 
    auto temp = std::filesystem::temp_directory_path() / "log";
-   koinos::initialize_logging( "log_test", "9abcd", "trace", temp );
+   koinos::initialize_logging( "log_test", "9abcd", "trace", temp, false );
 
    LOG( trace )   << "test";
    LOG( debug )   << "test";

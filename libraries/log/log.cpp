@@ -39,7 +39,7 @@ public:
    }
 };
 
-template< bool Color >
+template< bool Color, bool DateTime >
 class console_sink_impl : public boost::log::sinks::basic_formatted_sink_backend< char, boost::log::sinks::synchronized_feeding >
 {
    enum class color : uint8_t
@@ -89,18 +89,22 @@ public:
       auto ptime  = rec.attribute_values()[ TIMESTAMP_ATTR ].extract< boost::posix_time::ptime >().get();
       auto& s     = std::clog;
 
-      auto time = ptime.time_of_day();
-      auto date = ptime.date();
+      if constexpr ( DateTime )
+      {
+         auto time = ptime.time_of_day();
+         auto date = ptime.date();
 
-      s << date.year() << "-";
-      s << std::right << std::setfill( '0' ) << std::setw( 2 ) << date.month().as_number() << "-";
-      s << std::right << std::setfill( '0' ) << std::setw( 2 ) << date.day() << " ";
-      s << std::right << std::setfill( '0' ) << std::setw( 2 ) << boost::date_time::absolute_value( time.hours() ) << ":";
-      s << std::right << std::setfill( '0' ) << std::setw( 2 ) << boost::date_time::absolute_value( time.minutes() ) << ":";
-      s << std::right << std::setfill( '0' ) << std::setw( 2 ) << boost::date_time::absolute_value( time.seconds() ) << ".";
-      s << std::right << std::setfill( '0' ) << std::setw( 6 ) << boost::date_time::absolute_value( time.fractional_seconds() );
+         s << date.year() << "-";
+         s << std::right << std::setfill( '0' ) << std::setw( 2 ) << date.month().as_number() << "-";
+         s << std::right << std::setfill( '0' ) << std::setw( 2 ) << date.day() << " ";
+         s << std::right << std::setfill( '0' ) << std::setw( 2 ) << boost::date_time::absolute_value( time.hours() ) << ":";
+         s << std::right << std::setfill( '0' ) << std::setw( 2 ) << boost::date_time::absolute_value( time.minutes() ) << ":";
+         s << std::right << std::setfill( '0' ) << std::setw( 2 ) << boost::date_time::absolute_value( time.seconds() ) << ".";
+         s << std::right << std::setfill( '0' ) << std::setw( 6 ) << boost::date_time::absolute_value( time.fractional_seconds() );
+         s << " ";
+      }
 
-      s << " (" << svc_id << ")";
+      s << "(" << svc_id << ")";
       s << " [" << file << ":" << line << "] ";
       s << "<";
       switch ( level.get() )
@@ -172,10 +176,13 @@ void initialize_logging(
    const std::optional< std::string >& identifier,
    const std::string& filter_level,
    const std::optional< std::filesystem::path >& log_directory,
-   bool color )
+   bool color,
+   bool datetime )
 {
-   using console_sink       = boost::log::sinks::synchronous_sink< console_sink_impl< false > >;
-   using color_console_sink = boost::log::sinks::synchronous_sink< console_sink_impl< true > >;
+   using console_sink                = boost::log::sinks::synchronous_sink< console_sink_impl< false, false > >;
+   using console_datetime_sink       = boost::log::sinks::synchronous_sink< console_sink_impl< false, true > >;
+   using color_console_sink          = boost::log::sinks::synchronous_sink< console_sink_impl< true, false > >;
+   using color_console_datetime_sink = boost::log::sinks::synchronous_sink< console_sink_impl< true, true > >;
 
    std::string id;
 
@@ -187,9 +194,15 @@ void initialize_logging(
    std::string service_id = application_name + "." + id;
 
    if ( color )
-      boost::log::core::get()->add_sink( boost::make_shared< color_console_sink >() );
+      if ( datetime )
+         boost::log::core::get()->add_sink( boost::make_shared< color_console_datetime_sink >() );
+      else
+         boost::log::core::get()->add_sink( boost::make_shared< color_console_sink >() );
    else
-      boost::log::core::get()->add_sink( boost::make_shared< console_sink >() );
+      if ( datetime )
+         boost::log::core::get()->add_sink( boost::make_shared< console_datetime_sink >() );
+      else
+         boost::log::core::get()->add_sink( boost::make_shared< console_sink >() );
 
    boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >( SEVERITY_ATTR );
 

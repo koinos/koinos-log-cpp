@@ -1,138 +1,92 @@
 
-cmake_minimum_required(VERSION 3.10.2)
+cmake_minimum_required(VERSION 3.19.0)
 
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
-   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-   set(CMAKE_XCODE_ATTRIBUTE_CC           "${CMAKE_SOURCE_DIR}/ci/ccache_clang")
-   set(CMAKE_XCODE_ATTRIBUTE_CXX          "${CMAKE_SOURCE_DIR}/ci/ccache_clang++")
-   set(CMAKE_XCODE_ATTRIBUTE_LD           "${CMAKE_SOURCE_DIR}/ci/ccache_clang")
-   set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS   "${CMAKE_SOURCE_DIR}/ci/ccache_clang++")
+cmake_policy(SET CMP0074 NEW)
+cmake_policy(SET CMP0114 NEW)
+
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.24.0)
+  cmake_policy(SET CMP0135 NEW)
 endif()
 
-option(HUNTER_RUN_UPLOAD "Upload Hunter packages to binary cache server" OFF)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.27.0)
+  cmake_policy(SET CMP0144 NEW)
+endif()
 
-set(
-   HUNTER_CACHE_SERVERS
-   "https://github.com/koinos/hunter-cache"
-   CACHE
-   STRING
-   "Default cache server"
+include(FetchContent)
+FetchContent_Declare(
+  koinos_cmake
+  GIT_REPOSITORY https://github.com/koinos/koinos-cmake.git
+  GIT_TAG        9405a723e089f53397f8f719b9dce978f89779e4
 )
+FetchContent_MakeAvailable(koinos_cmake)
 
-set(
-   HUNTER_PASSWORDS_PATH
-   "${CMAKE_CURRENT_LIST_DIR}/cmake/Hunter/passwords.cmake"
-   CACHE
-   FILEPATH
-   "Hunter passwords"
-)
+include("${koinos_cmake_SOURCE_DIR}/Koinos.cmake")
 
-include("cmake/HunterGate.cmake")
-
-HunterGate(
-   URL "https://github.com/cpp-pm/hunter/archive/v0.24.14.tar.gz"
-   SHA1 "00901c19eefc02d24b16705b5f5a2b4f093a73fb"
-   LOCAL
-)
-
-project(koinos_log VERSION 2.0.0 LANGUAGES CXX C)
-
-#
-# CONFIGURATION
-#
-include(GNUInstallDirs)
-
-set(KOINOS_LIB_TARGET_NAME                ${PROJECT_NAME})
-set(KOINOS_LIB_TARGET_SHORT_NAME          "log")
-set(KOINOS_LIB_CONFIG_INSTALL_DIR         "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE INTERNAL "")
-set(KOINOS_LIB_INCLUDE_INSTALL_DIR        "${CMAKE_INSTALL_INCLUDEDIR}")
-set(KOINOS_LIB_TARGETS_EXPORT_NAME        "${PROJECT_NAME}Targets")
-set(KOINOS_LIB_CMAKE_CONFIG_TEMPLATE      "cmake/config.cmake.in")
-set(KOINOS_LIB_CMAKE_CONFIG_DIR           "${CMAKE_CURRENT_BINARY_DIR}")
-set(KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE  "${KOINOS_LIB_CMAKE_CONFIG_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
-set(KOINOS_LIB_CMAKE_PROJECT_CONFIG_FILE  "${KOINOS_LIB_CMAKE_CONFIG_DIR}/${PROJECT_NAME}Config.cmake")
-set(KOINOS_LIB_CMAKE_PROJECT_TARGETS_FILE "${KOINOS_LIB_CMAKE_CONFIG_DIR}/${PROJECT_NAME}Targets.cmake")
-set(KOINOS_LIB_PKGCONFIG_INSTALL_DIR      "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12.0")
-   cmake_policy(SET CMP0074 NEW)
-endif ()
+project(koinos_log
+   VERSION 2.0.0
+   DESCRIPTION "The Koinos log library"
+   LANGUAGES CXX C)
 
 option(BUILD_TESTS "Build Tests" ON)
-option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." OFF)
 
-# This is to force color output when using ccache with Unix Makefiles
-if(${FORCE_COLORED_OUTPUT})
-    if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
-       add_compile_options (-fdiagnostics-color=always)
-    elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang" )
-       add_compile_options (-fcolor-diagnostics)
-    endif ()
-endif ()
+koinos_coverage(
+  EXECUTABLE
+    koinos_log_tests
+  EXCLUDE
+    "tests/*"
+)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+koinos_add_package(Boost CONFIG REQUIRED
+  ADD_COMPONENTS program_options test log
+  FIND_COMPONENTS program_options log log_setup)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(Boost_NO_BOOST_CMAKE ON)
+koinos_add_package(Protobuf)
 
-if(COVERAGE)
-  include(CodeCoverage)
-  append_coverage_compiler_flags()
-  setup_target_for_coverage_lcov(
-     NAME coverage
-     LCOV_ARGS "--quiet" "--no-external"
-     EXECUTABLE koinos_log_tests
-     EXCLUDE "libraries/vendor/*" "build/generated/*")
-endif()
+koinos_add_package(koinos_util)
 
-hunter_add_package(Boost COMPONENTS log test)
-hunter_add_package(Protobuf)
-hunter_add_package(yaml-cpp)
-hunter_add_package(koinos_util)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
-find_package(Boost CONFIG REQUIRED log log_setup)
-find_package(Protobuf CONFIG REQUIRED)
-find_package(yaml-cpp CONFIG REQUIRED)
-find_package(koinos_util CONFIG REQUIRED)
-
-add_subdirectory(libraries)
+add_subdirectory(src)
 if (BUILD_TESTS)
    add_subdirectory(tests)
 endif()
 
-# Install a pkg-config file, so other tools can find this.
-configure_file(
-   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pkg-config.pc.in"
-   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
-)
-
-#
-# INSTALL
-# install header files, generate and install cmake config files for find_package()
-#
-include(CMakePackageConfigHelpers)
-
-configure_file(
-   "cmake/${PROJECT_NAME}ConfigVersion.cmake.in"
-   ${KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE}
-   @ONLY
-)
-configure_file(
-   ${KOINOS_LIB_CMAKE_CONFIG_TEMPLATE}
-   ${KOINOS_LIB_CMAKE_PROJECT_CONFIG_FILE}
-   @ONLY
+export(
+  TARGETS log
+  NAMESPACE Koinos::
+  FILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-targets.cmake
 )
 
 install(
-   FILES ${KOINOS_LIB_CMAKE_PROJECT_CONFIG_FILE} ${KOINOS_LIB_CMAKE_VERSION_CONFIG_FILE}
-   DESTINATION ${KOINOS_LIB_CONFIG_INSTALL_DIR}
+  TARGETS log
+  EXPORT ${PROJECT_NAME}-targets
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 install(
-   FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
-   DESTINATION ${KOINOS_LIB_PKGCONFIG_INSTALL_DIR}
+  EXPORT ${PROJECT_NAME}-targets
+  NAMESPACE Koinos::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
+
+configure_package_config_file(
+  ${koinos_cmake_SOURCE_DIR}/Templates/project.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion)
+
+install(
+  FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+  DESTINATION
+    ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+

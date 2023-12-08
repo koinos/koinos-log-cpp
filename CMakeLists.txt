@@ -23,9 +23,11 @@ FetchContent_MakeAvailable(koinos_cmake)
 include("${koinos_cmake_SOURCE_DIR}/Koinos.cmake")
 
 project(koinos_log
-   VERSION 2.0.0
-   DESCRIPTION "The Koinos log library"
-   LANGUAGES CXX C)
+  VERSION 2.0.0
+  DESCRIPTION "The Koinos log library"
+  LANGUAGES CXX C)
+
+koinos_define_version()
 
 koinos_coverage(
   EXECUTABLE

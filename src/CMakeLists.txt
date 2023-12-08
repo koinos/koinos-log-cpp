@@ -19,7 +19,7 @@ target_include_directories(
       $<INSTALL_INTERFACE:include>
 )
 
-koinos_add_format_target(log)
+koinos_add_format(TARGET log)
 
 add_library(Koinos::log ALIAS log)
 

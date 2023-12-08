@@ -19,13 +19,18 @@ target_include_directories(
       $<INSTALL_INTERFACE:include>
 )
 
-koinos_add_format_target(log)
-
 add_library(Koinos::log ALIAS log)
 
+koinos_add_format(
+  TARGET
+    log
+)
+
+koinos_install(TARGETS log)
+
 install(
-  FILES
-    ${PROJECT_SOURCE_DIR}/include/koinos/log.hpp
+  DIRECTORY
+    ${PROJECT_SOURCE_DIR}/include
   DESTINATION
-    include/koinos
+    ${CMAKE_INSTALL_PREFIX}
 )

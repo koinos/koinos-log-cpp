@@ -1,5 +1,5 @@
 add_library(log
-  log.cpp
+  koinos/log.cpp
 
   ${PROJECT_SOURCE_DIR}/include/koinos/log.hpp)
 

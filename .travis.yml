@@ -19,7 +19,7 @@ addons:
 
 jobs:
   include:
-    - os: linix
+    - os: linux
       dist: jammy
       env:
         - RUN_TYPE=static-analysis

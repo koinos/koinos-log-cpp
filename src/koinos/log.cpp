@@ -219,8 +219,8 @@ void initialize_logging( const std::string& application_name,
       boost::log::keywords::target_file_name =
         log_directory->string() + "/" + application_name + "-%Y-%m-%dT%H-%M-%S.%f.log",
       boost::log::keywords::target        = log_directory->string(),
-      boost::log::keywords::rotation_size = 1 * 1024 * 1024,
-      boost::log::keywords::max_size      = 100 * 1024 * 1024,
+      boost::log::keywords::rotation_size = 1 * 1'024 * 1'024,
+      boost::log::keywords::max_size      = 100 * 1'024 * 1'024,
       boost::log::keywords::max_files     = 100,
       boost::log::keywords::format        = "%" TIMESTAMP_ATTR "% (%" SERVICE_ID_ATTR "%) [%" FILE_ATTR "%:%" LINE_ATTR
                                      "%] <%" SEVERITY_ATTR "%>: %" MESSAGE_ATTR "%",

@@ -18,8 +18,6 @@ target_include_directories(
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:include>)
 
-add_library(Koinos::log ALIAS log)
-
 koinos_add_format(TARGET log)
 
 koinos_install(TARGETS log)

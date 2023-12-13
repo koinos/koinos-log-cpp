@@ -13,7 +13,7 @@ koinos_add_test(
 target_link_libraries(
   log_tests
     PRIVATE
-      Koinos::log)
+      log)
 
 target_include_directories(
   log_tests

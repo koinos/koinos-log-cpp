@@ -7,17 +7,30 @@
 
 #include <koinos/log.hpp>
 
+std::stringbuf buffer;
+
 struct log_fixture
-{};
+{
+  std::streambuf* clog_buffer;
+
+  log_fixture()
+  {
+    buffer.str();
+    clog_buffer = std::clog.rdbuf();
+  }
+
+  ~log_fixture()
+  {
+    std::clog.rdbuf( clog_buffer );
+  }
+};
 
 BOOST_FIXTURE_TEST_SUITE( log_tests, log_fixture )
 
 BOOST_AUTO_TEST_CASE( log_color_tests )
 {
   BOOST_TEST_MESSAGE( "Testing logging library with color" );
-  std::stringstream stream;
-  auto buf = std::clog.rdbuf();
-  std::clog.rdbuf( stream.rdbuf() );
+  auto buf = std::clog.rdbuf( &buffer );
 
   std::vector< std::string > logtypes{ "<\033[34mtrace\033[0m>",
                                        "<\033[34mdebug\033[0m>",
@@ -57,7 +70,7 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
   std::string expected_string = line_one.substr( pos );
 
   std::vector< std::string > results;
-  std::string stream_str = stream.str();
+  std::string stream_str = buffer.str();
   boost::split( results, stream_str, boost::is_any_of( "\n" ) );
   results.pop_back();
 
@@ -80,9 +93,7 @@ BOOST_AUTO_TEST_CASE( log_color_tests )
 BOOST_AUTO_TEST_CASE( log_no_color_tests )
 {
   BOOST_TEST_MESSAGE( "Testing logging library without color" );
-  std::stringstream stream;
-  auto buf = std::clog.rdbuf();
-  std::clog.rdbuf( stream.rdbuf() );
+  auto buf = std::clog.rdbuf( &buffer );
 
   std::vector< std::string > logtypes{ "<trace>", "<debug>", "<info>", "<warning>", "<error>", "<fatal>", "<unknown>" };
 
@@ -116,7 +127,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
   std::string expected_string = line_one.substr( pos );
 
   std::vector< std::string > results;
-  std::string stream_str = stream.str();
+  std::string stream_str = buffer.str();
   boost::split( results, stream_str, boost::is_any_of( "\n" ) );
   results.pop_back();
 
@@ -139,9 +150,7 @@ BOOST_AUTO_TEST_CASE( log_no_color_tests )
 BOOST_AUTO_TEST_CASE( log_filter_tests )
 {
   BOOST_TEST_MESSAGE( "Testing log filtering" );
-  std::stringstream stream;
-  auto buf = std::clog.rdbuf();
-  std::clog.rdbuf( stream.rdbuf() );
+  auto buf = std::clog.rdbuf( &buffer );
 
   std::vector< std::string > logtypes{ "<warning>", "<error>", "<fatal>", "<unknown>" };
 
@@ -175,7 +184,7 @@ BOOST_AUTO_TEST_CASE( log_filter_tests )
   std::string expected_string = line_one.substr( pos );
 
   std::vector< std::string > results;
-  std::string stream_str = stream.str();
+  std::string stream_str = buffer.str();
   boost::split( results, stream_str, boost::is_any_of( "\n" ) );
   results.pop_back();
 

@@ -35,17 +35,17 @@ cmake -D CMAKE_BUILD_TYPE=Debug -D STATIC_ANALYSIS=ON ..
 
 ### Testing
 
-Tests are built by default as target `koinos_log_tests`. You can building them specifically with:
+Tests are built by default as target `log_tests`. You can building them specifically with:
 
 ```
-cmake --build . --config Release --parallel --target koinos_log_tests
+cmake --build . --config Release --parallel --target log_tests
 ```
 
 Tests can be invoked from the tests directiory within the build directory.
 
 ```
 cd tests
-./koinos_log_tests
+./log_tests
 ```
 
 Tests can also be ran in parallel using CTest.
@@ -60,6 +60,15 @@ You can also generate a coverage report.
 ```
 cmake -D CMAKE_BUILD_TYPE=Debug -D COVERAGE=ON ..
 cmake --build . --config Debug --parallel 3 --target coverage
+```
+
+You can run tests in different sanitizer profiles. Those profiles are None (Default), Address, Stack, and Thread. Currently, these are only known to work with clang, but may work with gcc with additional environment configuration.
+
+```
+cmake -D CMAKE_BUILT_TYPE=Debug -D SANITIZER=Address ..
+cmake --build . --config Debug --parallel --target log_tests
+cd tests
+ctest -j
 ```
 
 ### Formatting

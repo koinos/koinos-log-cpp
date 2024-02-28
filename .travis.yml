@@ -16,14 +16,18 @@ addons:
       - gcc-12
       - g++-12
 
+env:
+  - CMAKE_CC_COMPILER_LAUNCHER=ccache
+  - CMAKE_CXX_COMPILER_LAUNCHER=ccache
+
 jobs:
   include:
     - name: "Static Analysis"
       os: linux
       dist: jammy
       env:
-        - CC="ccache clang"
-        - CXX="ccache clang++"
+        - CC=clang
+        - CXX=clang++
       before_script:
         - echo $CC
         - cmake -DCMAKE_BUILD_TYPE=Debug -DSTATIC_ANALYSIS=ON .
@@ -34,8 +38,8 @@ jobs:
       os: linux
       dist: jammy
       env:
-        - CC="ccache clang"
-        - CXX="ccache clang++"
+        - CC=clang
+        - CXX=clang++
       before_script:
         - mkdir build-address
         - pushd build-address
@@ -66,8 +70,8 @@ jobs:
       os: linux
       dist: jammy
       env:
-        - CC="ccache clang"
-        - CXX="ccache clang++"
+        - CC=clang
+        - CXX=clang++
       install:
         - sudo gem install coveralls-lcov
       before_script:
@@ -84,8 +88,8 @@ jobs:
       os: linux
       dist: jammy
       env:
-        - CC="ccache gcc-12"
-        - CXX="ccache g++-12"
+        - CC=gcc-12
+        - CXX=g++-12
       before_script:
         - cmake -DCMAKE_BUILD_TYPE=Release .
         - cmake --build . --config Release --parallel 3
@@ -97,8 +101,8 @@ jobs:
       os: linux
       dist: jammy
       env:
-        - CC="ccache clang"
-        - CXX="ccache clang++"
+        - CC=clang
+        - CXX=clang++
       before_script:
         - cmake -DCMAKE_BUILD_TYPE=Release .
         - cmake --build . --config Release --parallel 3

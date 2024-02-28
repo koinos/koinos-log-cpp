@@ -53,7 +53,9 @@ jobs:
         - CXX=clang++
       script:
         - sudo gem install coveralls-lcov
-        - cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON .
+        - mkdir build
+        - pushd build
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON ..
         - cmake --build . --config Debug --parallel 3 --target coverage
         - coveralls-lcov --repo-token $COVERALLS_REPO_TOKEN --service-name travis-pro --service-job-id $TRAVIS_JOB_ID ./coverage.info
     - name: "GCC Unit Tests"

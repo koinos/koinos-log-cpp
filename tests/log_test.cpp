@@ -15,7 +15,7 @@ struct log_fixture
 
   log_fixture()
   {
-    buffer.str("");
+    buffer.str( "" );
     clog_buffer = std::clog.rdbuf();
   }
 

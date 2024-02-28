@@ -32,30 +32,27 @@ jobs:
       env:
         - CC=clang
         - CXX=clang++
+      before_script:
+        - mkdir build-address
+        - pushd build-address
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Address ..
+        - popd
+        - mkdir build-stack
+        - pushd build-stack
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Stack ..
+        - popd
+        - mkdir build-thread
+        - pushd build-thread
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Thread ..
       script:
-        - |
-          set -e
-          mkdir build-address && pushd build-address
-          cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Address ..
-          cmake --build . --config Debug --parallel 3
-          cd tests
-          ctest -j1 --output-on-failure
-        - |
-          set -e
-          popd
-          mkdir build-stack && pushd build-stack
-          cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Stack ..
-          cmake --build . --config Debug --parallel 3
-          cd tests
-          ctest -j1 --output-on-failure
-        - |
-          set -e
-          popd
-          mkdir build-thread && pushd build-thread
-          cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Thread ..
-          cmake --build . --config Debug --parallel 3
-          cd tests
-          ctest -j1 --output-on-failure
+        - pushd build-address/tests
+        - ctest -j1 --output-on-failure
+        - popd
+        - pushd build-stack/tests
+        - ctest -j1 --output-on-failure
+        - popd
+        - pushd build-thread/tests
+        - ctest -j1 --output-on-failure
 
     - name: "Coverage"
       os: linux

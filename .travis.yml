@@ -2,7 +2,7 @@ language: c++
 
 addons:
   apt:
-  update: true
+    update: true
     packages:
       - clang
       - clang-format

@@ -17,8 +17,9 @@ addons:
       - g++-12
 
 env:
-  - CMAKE_CC_COMPILER_LAUNCHER=ccache
-  - CMAKE_CXX_COMPILER_LAUNCHER=ccache
+  global:
+    - CMAKE_CC_COMPILER_LAUNCHER=ccache
+    - CMAKE_CXX_COMPILER_LAUNCHER=ccache
 
 jobs:
   include:

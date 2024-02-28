@@ -52,7 +52,7 @@ jobs:
           set -e
           popd
           mkdir build-thread && pushd build-thread
-          cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Thread .
+          cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Thread ..
           cmake --build . --config Debug --parallel 3
           cd tests
           ctest -j1 --output-on-failure

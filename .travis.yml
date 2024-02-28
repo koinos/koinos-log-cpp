@@ -23,6 +23,7 @@ jobs:
         - CXX=clang++
       script:
         - |
+          set -e
           cmake -DCMAKE_BUILD_TYPE=Debug -DSTATIC_ANALYSIS=ON .
           cmake --build . --config Debug --parallel 3
     - name: "Sanitizer"
@@ -33,12 +34,14 @@ jobs:
         - CXX=clang++
       script:
         - |
+          set -e
           mkdir build-address && pushd build-address
           cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Address ..
           cmake --build . --config Debug --parallel 3
           cd tests
           ctest -j1 --output-on-failure
         - |
+          set -e
           popd
           mkdir build-stack && pushd build-stack
           cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Stack ..
@@ -46,6 +49,7 @@ jobs:
           cd tests
           ctest -j1 --output-on-failure
         - |
+          set -e
           popd
           mkdir build-thread && pushd build-thread
           cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Thread .
@@ -60,6 +64,7 @@ jobs:
         - CXX=clang++
       script:
         - |
+          set -e
           sudo gem install coveralls-lcov
           mkdir build && cd build
           cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON ..
@@ -73,6 +78,7 @@ jobs:
         - CXX=g++-12
       script:
         - |
+          set -e
           cmake -DCMAKE_BUILD_TYPE=Release .
           cmake --build . --config Release --parallel 3
           cd tests
@@ -85,6 +91,7 @@ jobs:
         - CXX=clang++
       script:
         - |
+          set -e
           cmake -DCMAKE_BUILD_TYPE=Release .
           cmake --build . --config Release --parallel 3 --target all --target format.check
           cd tests

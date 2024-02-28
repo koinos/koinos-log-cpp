@@ -44,6 +44,7 @@ jobs:
         - mkdir build-thread
         - pushd build-thread
         - cmake -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=Thread ..
+        - popd
       script:
         - pushd build-address/tests
         - ctest -j1 --output-on-failure

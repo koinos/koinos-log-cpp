@@ -18,7 +18,7 @@ addons:
 
 env:
   global:
-    - CMAKE_CC_COMPILER_LAUNCHER=ccache
+    - CMAKE_C_COMPILER_LAUNCHER=ccache
     - CMAKE_CXX_COMPILER_LAUNCHER=ccache
 
 jobs:
@@ -79,7 +79,6 @@ jobs:
         - mkdir build
         - cd build
         - cmake -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON ..
-        - cmake --build . --config Debug --parallel 3
       script:
         - cmake --build . --config Debug --parallel 3 --target coverage
       after_success:

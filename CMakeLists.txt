@@ -23,10 +23,10 @@ koinos_add_package(Boost CONFIG REQUIRED
   ADD_COMPONENTS program_options test log
   FIND_COMPONENTS program_options log log_setup)
 
-koinos_add_package(Protobuf)
+koinos_add_package(Protobuf CONFIG REQUIRED)
 koinos_add_package(yaml-cpp CONFIG REQUIRED)
 
-koinos_add_package(koinos_util)
+koinos_add_package(koinos_util CONFIG REQUIRED)
 
 add_subdirectory(src)
 add_subdirectory(tests)
